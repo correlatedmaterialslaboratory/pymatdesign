@@ -21,7 +21,8 @@ from pymatgen.core.periodic_table import PeriodicTable, Element
 
 
 def __composition_generator(partial_composition, partial_oxidation,
-                            abstract_composition, total_oxidation_state):
+                            abstract_composition, total_oxidation_state,
+                            only_common_oxidation_states):
     pt = PeriodicTable()
 
     num_elements = len(abstract_composition.elements)
@@ -32,7 +33,10 @@ def __composition_generator(partial_composition, partial_oxidation,
     if num_elements == 1:
         for X in pt.all_elements:
             possible_oxidations = set()
-            for oxi_state in X.oxidation_states:
+            oxidation_states = X.oxidation_states
+            if only_common_oxidation_states:
+                oxidation_states = X.common_oxidation_states
+            for oxi_state in oxidation_states:
                 possible_oxidations.add(partial_oxidation + oxi_state * abstract_stoichiometry)
             if total_oxidation_state in possible_oxidations:
                 this_composition = partial_composition + Composition({X.symbol: abstract_stoichiometry})
@@ -42,11 +46,15 @@ def __composition_generator(partial_composition, partial_oxidation,
         new_abstract_composition = abstract_composition - Composition({abstract_element: abstract_stoichiometry})
         for X in pt.all_elements:
             new_composition = partial_composition + Composition({X.symbol: abstract_stoichiometry})
-            for oxi_state in X.oxidation_states:
+            oxidation_states = X.oxidation_states
+            if only_common_oxidation_states:
+                oxidation_states = X.common_oxidation_states
+            for oxi_state in oxidation_states:
                 new_compositions = __composition_generator(new_composition,
                                                            partial_oxidation + oxi_state*abstract_stoichiometry,
                                                            new_abstract_composition,
-                                                           total_oxidation_state)
+                                                           total_oxidation_state,
+                                                           only_common_oxidation_states)
                 possible_compositions = possible_compositions.union(new_compositions)
     return possible_compositions
 
@@ -75,7 +83,9 @@ def generate_compositions_by_oxidation(composition, constraints = None,
     if num_elements == 0:
         compositions = set()
     else:
-        compositions = __composition_generator(Composition(), 0, composition, total_oxidation_state)
+        compositions = __composition_generator(Composition(), 0, composition,
+                                               total_oxidation_state,
+                                               only_common_oxidation_states)
     return compositions
 
 
