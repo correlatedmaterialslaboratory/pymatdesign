@@ -1,7 +1,7 @@
 from __future__ import division, print_function, unicode_literals
 
 """
-This module tests the generation of 
+This module tests the combinatoric generation of compositions.
 """
 
 __author__ = "Chuck-Hou Yee"
@@ -55,7 +55,9 @@ class CompositionCombinatoricsTest(unittest.TestCase):
                     for oxi_X in oxidations_X:
                         possible_oxidations.add(oxi_A*stoichiometry_A + oxi_X*stoichiometry_X)
                 if total_oxidation in possible_oxidations:
-                    possible_compositions.add(Composition({A.symbol: stoichiometry_A, X.symbol: stoichiometry_X}))
+                    new_composition = Composition({A.symbol: stoichiometry_A, X.symbol: stoichiometry_X})
+                    if not new_composition.is_element:
+                        possible_compositions.add(new_composition)
     
         return possible_compositions
 
