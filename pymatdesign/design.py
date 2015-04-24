@@ -59,17 +59,13 @@ def __composition_generator(partial_composition, partial_oxidation,
     return possible_compositions
 
 
-def generate_compositions_by_oxidation(composition, constraints = None,
-                                       total_oxidation_state = 0,
+def generate_compositions_by_oxidation(composition, total_oxidation_state = 0,
                                        only_common_oxidation_states = True):
     """
     Generate all possible realizations of a given abstract composition formula.
 
     Args:
         composition: abstract composition. Ex: Composition("ABC3")
-        constraints: dictionary of functions specifying constraints on
-            oxidation states (or anything else, for that matter). Ex:
-            {"A": lambda el: el.oxidation_state < 0}
         total_oxidation_state: constraint on total charge of composition,
             defaults to 0 (neutral).
         only_common_oxidation_states: whether to include rare oxidation states
