@@ -19,7 +19,7 @@ import pymatgen as mp
 from pymatgen.core.composition import Composition
 from pymatgen.core.periodic_table import PeriodicTable, Element
 
-
+@profile
 def __composition_generator(partial_composition, partial_oxidation,
                             abstract_composition, total_oxidation_state,
                             only_common_oxidation_states):
@@ -29,7 +29,7 @@ def __composition_generator(partial_composition, partial_oxidation,
     abstract_element = abstract_composition.elements[0]
     abstract_stoichiometry = abstract_composition[abstract_element]
 
-    possible_compositions = set()
+    possible_compositions = []
     if num_elements == 1:
         for X in pt.all_elements:
             possible_oxidations = set()
@@ -41,7 +41,7 @@ def __composition_generator(partial_composition, partial_oxidation,
             if total_oxidation_state in possible_oxidations:
                 this_composition = partial_composition + Composition({X.symbol: abstract_stoichiometry})
                 if partial_composition.num_atoms == 0 or (partial_composition.num_atoms > 0 and not this_composition.is_element):
-                    possible_compositions.add(this_composition)
+                    possible_compositions.append(this_composition)
     else:
         new_abstract_composition = abstract_composition - Composition({abstract_element: abstract_stoichiometry})
         for X in pt.all_elements:
@@ -55,10 +55,10 @@ def __composition_generator(partial_composition, partial_oxidation,
                                                            new_abstract_composition,
                                                            total_oxidation_state,
                                                            only_common_oxidation_states)
-                possible_compositions = possible_compositions.union(new_compositions)
+                possible_compositions += new_compositions
     return possible_compositions
 
-
+@profile
 def generate_compositions_by_oxidation(composition, total_oxidation_state = 0,
                                        only_common_oxidation_states = True):
     """
@@ -77,33 +77,9 @@ def generate_compositions_by_oxidation(composition, total_oxidation_state = 0,
     composition = Composition(composition)
     num_elements = len(composition.elements)
     if num_elements == 0:
-        compositions = set()
+        compositions = []
     else:
         compositions = __composition_generator(Composition(), 0, composition,
                                                total_oxidation_state,
                                                only_common_oxidation_states)
-    return compositions
-
-
-def test_binary():
-    pt = PeriodicTable()
-    elements = pt.all_elements
-
-    common_oxidations = False
-    stoichiometry_A = 1
-    stoichiometry_X = 1
-    total_oxidation = 0
-
-    possible_compositions = set()
-    for A in elements:
-        for X in elements:
-            possible_oxidations = set()
-            oxidations_A = A.common_oxidation_states if common_oxidations else A.oxidation_states
-            oxidations_X = X.common_oxidation_states if common_oxidations else X.oxidation_states
-            for oxi_A in oxidations_A:
-                for oxi_X in oxidations_X:
-                    possible_oxidations.add(oxi_A*stoichiometry_A + oxi_X*stoichiometry_X)
-            if total_oxidation in possible_oxidations:
-                possible_compositions.add(Composition({A.symbol: stoichiometry_A, X.symbol: stoichiometry_X}))
-
-    return possible_compositions
+    return set(compositions)
