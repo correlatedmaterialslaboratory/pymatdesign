@@ -23,6 +23,9 @@ from pymatdesign import generate_compositions_by_oxidation
 class CompositionCombinatoricsTest(unittest.TestCase):
     def generate_species(self, stoichiometry = 1, oxidation_state = 0,
                          common_oxidations = False):
+        """
+        Reference code to return elements with given oxidations state.
+        """
         pt = PeriodicTable()
         possible_species = set()
         for X in pt.all_elements:
@@ -53,16 +56,18 @@ class CompositionCombinatoricsTest(unittest.TestCase):
                     oxidations_X = X.common_oxidation_states
                 for oxi_A in oxidations_A:
                     for oxi_X in oxidations_X:
-                        possible_oxidations.add(oxi_A*stoichiometry_A + oxi_X*stoichiometry_X)
+                        oxi = oxi_A*stoichiometry_A + oxi_X*stoichiometry_X
+                        possible_oxidations.add(oxi)
                 if total_oxidation in possible_oxidations:
-                    new_composition = Composition({A.symbol: stoichiometry_A, X.symbol: stoichiometry_X})
+                    new_composition = Composition(
+                        {A.symbol: stoichiometry_A,
+                         X.symbol: stoichiometry_X})
                     if not new_composition.is_element:
                         possible_compositions.add(new_composition)
     
         return possible_compositions
 
     def test_ions(self):
-        """generate_compositions_by_oxidation should generate all elements with given oxidation state"""
         # 3+ ions
         ions = self.generate_species(1, 3, common_oxidations = False)
         args = {'composition': 'X', 'total_oxidation_state': 3,
@@ -86,8 +91,10 @@ class CompositionCombinatoricsTest(unittest.TestCase):
         self.assertEqual(ions, output)
 
     def test_binary(self):
-        """generate_compositions_by_oxidation should generate all binary compounds with"""
-        """given oxidation state"""
+        """
+        Generate_compositions_by_oxidation should generate all binary
+        compounds with given oxidation state
+        """
         # AX neutral
         binaries = self.generate_binaries(1, 1, 0, common_oxidations = True)
         args = {'composition': 'AX', 'total_oxidation_state': 0,
@@ -102,6 +109,10 @@ class CompositionCombinatoricsTest(unittest.TestCase):
         output = generate_compositions_by_oxidation(**args)
         self.assertEqual(binaries, output)
 
+
+class GenerateVaspTest(unittest.TestCase):
+    def test_blank(self):
+        pass
 
 if __name__ == "__main__":
     unittest.main()
