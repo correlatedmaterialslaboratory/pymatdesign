@@ -107,14 +107,3 @@ def test_binary():
                 possible_compositions.add(Composition({A.symbol: stoichiometry_A, X.symbol: stoichiometry_X}))
 
     return possible_compositions
-
-
-if __name__ == '__main__':
-    # Find all binary compositions AX2 which have 2- charge.
-    #   Example: (HgSe2)Ba2CuO2
-
-    for comp in generate_compositions_by_oxidation("AX"):
-        print(comp.reduced_formula)
-
-#     for comp in test_binary():
-#         print(comp.reduced_formula)
