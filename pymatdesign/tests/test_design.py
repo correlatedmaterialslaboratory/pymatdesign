@@ -67,6 +67,42 @@ class CompositionCombinatoricsTest(unittest.TestCase):
     
         return possible_compositions
 
+    def generate_ternaries(self, nA = 1, nB = 1, nC = 1,
+                           total_oxidation = 0, common_oxidations = False):
+        """
+        Reference code to generate possible A_n B_m C_p ternary compositions
+        with arbitrary total oxidation states.
+        """
+        pt = PeriodicTable()
+        possible_compositions = set()
+        for A in pt.all_elements:
+            for B in pt.all_elements:
+                for C in pt.all_elements:
+                    possible_oxidations = set()
+                    oxiAs = A.oxidation_states
+                    oxiBs = B.oxidation_states
+                    oxiCs = C.oxidation_states
+                    if common_oxidations:
+                        oxiAs = A.common_oxidation_states
+                    if common_oxidations:
+                        oxiBs = B.common_oxidation_states
+                    if common_oxidations:
+                        oxiCs = C.common_oxidation_states
+                    for oxiA in oxiAs:
+                        for oxiB in oxiBs:
+                            for oxiC in oxiCs:
+                                oxi = oxiA*nA + oxiB*nB + oxiC*nC
+                                possible_oxidations.add(oxi)
+                    if total_oxidation in possible_oxidations:
+                        new_composition = Composition({
+                                A.symbol: nA,
+                                B.symbol: nB,
+                                C.symbol: nC})
+                        if not new_composition.is_element:
+                            possible_compositions.add(new_composition)
+        
+        return possible_compositions
+
     def test_ions(self):
         # 3+ ions
         ions = self.generate_species(1, 3, common_oxidations = False)
