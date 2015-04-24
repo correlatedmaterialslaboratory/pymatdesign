@@ -17,7 +17,7 @@ import unittest
 
 from pymatgen.core.periodic_table import PeriodicTable
 from pymatgen.core.composition import Composition
-from design import generate_compositions_by_oxidation
+from pymatdesign import generate_compositions_by_oxidation
 
 
 class CompositionCombinatoricsTest(unittest.TestCase):
