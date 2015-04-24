@@ -61,7 +61,7 @@ class CompositionCombinatoricsTest(unittest.TestCase):
     
         return possible_compositions
 
-    def test_elements(self):
+    def test_ions(self):
         """generate_compositions_by_oxidation should generate all elements with given oxidation state"""
         # 3+ ions
         ions = self.generate_species(1, 3, common_oxidations = False)
@@ -77,6 +77,7 @@ class CompositionCombinatoricsTest(unittest.TestCase):
         output = generate_compositions_by_oxidation(**args)
         self.assertEqual(ions, output)
 
+    def test_ions_empty(self):
         # 10- (nonexistent) ions
         ions = self.generate_species(1, -10, common_oxidations = False)
         args = {'composition': 'X', 'total_oxidation_state': -10,
@@ -84,8 +85,9 @@ class CompositionCombinatoricsTest(unittest.TestCase):
         output = generate_compositions_by_oxidation(**args)
         self.assertEqual(ions, output)
 
-    def test_binaries(self):
-        """generate_compositions_by_oxidation should generate all binary compounds with given oxidation state"""
+    def test_binary(self):
+        """generate_compositions_by_oxidation should generate all binary compounds with"""
+        """given oxidation state"""
         # AX neutral
         binaries = self.generate_binaries(1, 1, 0, common_oxidations = True)
         args = {'composition': 'AX', 'total_oxidation_state': 0,
@@ -99,6 +101,7 @@ class CompositionCombinatoricsTest(unittest.TestCase):
                 'only_common_oxidation_states': True}
         output = generate_compositions_by_oxidation(**args)
         self.assertEqual(binaries, output)
+
 
 if __name__ == "__main__":
     unittest.main()
